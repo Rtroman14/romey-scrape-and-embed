@@ -1,0 +1,27 @@
+{
+    "name": "roofgpt-scrape-and-embed",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "npx functions-framework --target=scrape-and-embed --signature-type=http"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "@ai-sdk/google": "^2.0.6",
+        "@ai-sdk/openai": "^2.0.15",
+        "@google-cloud/functions-framework": "^4.0.0",
+        "@sentry/cli": "^2.52.0",
+        "@sentry/google-cloud-serverless": "^10.5.0",
+        "@supabase/supabase-js": "^2.55.0",
+        "ai": "^5.0.15",
+        "axios": "^1.11.0",
+        "dotenv": "^17.2.1",
+        "jsonwebtoken": "^9.0.2",
+        "langchain": "^0.3.30",
+        "undici": "^6.21.3"
+    }
+}

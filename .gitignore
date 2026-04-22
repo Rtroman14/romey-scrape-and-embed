@@ -1,0 +1,7 @@
+.env
+.env.yaml
+.env*
+
+scrapedPages.js
+
+node_modules
