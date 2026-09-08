@@ -26,7 +26,7 @@ const summarizeWebPage = async ({ text }) => {
         });
 
         const { object } = await generateObject({
-            model: google("gemini-2.0-flash-lite"),
+            model: google("gemini-3.5-flash-lite"),
             temperature: 0,
             schema: z.object({
                 summaries: z.array(z.string()),

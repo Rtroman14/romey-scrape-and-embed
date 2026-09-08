@@ -33,7 +33,7 @@ Return only the rephrased chunk.
 const contextualizeChunk = async ({ google, text, chunk }) => {
     try {
         const result = await generateText({
-            model: google("gemini-2.0-flash-lite"),
+            model: google("gemini-3.5-flash-lite"),
             temperature: 0,
             maxTokens: CHUNK_SIZE_TOKENS * 0.1 + CHUNK_SIZE_TOKENS,
             prompt: getContextPrompt({ text, chunk }),
@@ -74,7 +74,7 @@ const contextualizeChunks = async ({ docs, text }) => {
                         ...doc,
                         content: contextualizedContent,
                     };
-                })
+                }),
             );
 
             results.push(...batchResults);
