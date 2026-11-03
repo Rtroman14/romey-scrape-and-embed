@@ -8,7 +8,7 @@ gcloud config set project romey
 
 gcloud functions deploy scrape-and-embed \
 --gen2 \
---runtime=nodejs20 \
+--runtime=nodejs22 \
 --region=us-west1 \
 --trigger-http \
 --source=. \

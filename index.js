@@ -16,6 +16,7 @@ const Sentry = require("@sentry/google-cloud-serverless");
 const { validateToken } = require("./src/auth");
 const { processDocuments } = require("./src/processDocument");
 const _ = require("./src/Helpers");
+const logError = require("./src/observability");
 
 Sentry.init({ dsn: process.env.SENTRY_DSN, sendDefaultPii: true });
 
@@ -217,7 +218,7 @@ functions.http(
                 message: error.message,
             });
 
-            console.error(error);
+            logError({ error, message: "scrape-and-embed failed:", extra: { team_id, task_id } });
             return res.status(500).send({
                 success: false,
                 message: error.message,

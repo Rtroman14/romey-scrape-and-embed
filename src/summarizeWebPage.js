@@ -1,6 +1,7 @@
-const { createGoogleGenerativeAI } = require("@ai-sdk/google");
-const { generateObject } = require("ai");
+const { generateText, Output } = require("ai");
 const { z } = require("zod");
+const { TEXT_MODEL } = require("./variables");
+const logError = require("./observability");
 
 const getSummaryPrompt = (text) => `
 ## Task:
@@ -21,23 +22,22 @@ ${text}
 
 const summarizeWebPage = async ({ text }) => {
     try {
-        const google = createGoogleGenerativeAI({
-            apiKey: process.env.GOOGLE_AI_API_KEY_ROOFGPT,
-        });
-
-        const { object } = await generateObject({
-            model: google("gemini-3.5-flash-lite"),
+        const { output } = await generateText({
+            model: TEXT_MODEL,
             temperature: 0,
-            schema: z.object({
-                summaries: z.array(z.string()),
+            reasoning: "none",
+            output: Output.object({
+                schema: z.object({
+                    summaries: z.array(z.string()),
+                }),
             }),
             prompt: getSummaryPrompt(text),
         });
 
-        const summaries = Array.isArray(object.summaries) ? object.summaries : [];
+        const summaries = Array.isArray(output.summaries) ? output.summaries : [];
         return summaries;
     } catch (error) {
-        console.error("Error in summarizeWebPage:", error);
+        logError({ error, message: "Error in summarizeWebPage:" });
         return []; // Return empty array if process fails
     }
 };

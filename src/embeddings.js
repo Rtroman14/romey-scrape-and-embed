@@ -1,15 +1,11 @@
 const { embedMany } = require("ai");
-const { createGoogleGenerativeAI } = require("@ai-sdk/google");
-
-const google = createGoogleGenerativeAI({
-    apiKey: process.env.GOOGLE_AI_API_KEY_ROOFGPT,
-});
+const { EMBEDDING_MODEL } = require("./variables");
 
 const embedTextsWithGoogle = async ({ texts }) => {
     if (!Array.isArray(texts) || texts.length === 0) return [];
 
     const { embeddings } = await embedMany({
-        model: google.textEmbedding("gemini-embedding-001"),
+        model: EMBEDDING_MODEL,
         values: texts,
         providerOptions: {
             google: {
