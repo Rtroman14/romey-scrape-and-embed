@@ -1,6 +1,6 @@
-const { createGoogleGenerativeAI } = require("@ai-sdk/google");
 const { generateText } = require("ai");
-const { CHUNK_SIZE_TOKENS } = require("./variables");
+const { CHUNK_SIZE_TOKENS, TEXT_MODEL } = require("./variables");
+const logError = require("./observability");
 
 const getContextPrompt = ({ text, chunk }) => {
     const wordCount = chunk.split(/\s+/).filter(Boolean).length;
@@ -30,42 +30,32 @@ Return only the rephrased chunk.
 `;
 };
 
-const contextualizeChunk = async ({ google, text, chunk }) => {
+const contextualizeChunk = async ({ text, chunk }) => {
     try {
         const result = await generateText({
-            model: google("gemini-3.5-flash-lite"),
+            model: TEXT_MODEL,
             temperature: 0,
-            maxTokens: CHUNK_SIZE_TOKENS * 0.1 + CHUNK_SIZE_TOKENS,
+            reasoning: "none",
+            maxOutputTokens: CHUNK_SIZE_TOKENS * 0.1 + CHUNK_SIZE_TOKENS,
             prompt: getContextPrompt({ text, chunk }),
         });
         return result.text;
     } catch (error) {
-        console.error("Error contextualizing chunk:", error);
+        logError({ error, message: "Error contextualizing chunk:" });
         return chunk;
     }
 };
 
 const contextualizeChunks = async ({ docs, text }) => {
     try {
-        const googleInstance1 = createGoogleGenerativeAI({
-            apiKey: process.env.GOOGLE_AI_API_KEY_ROOFGPT,
-        });
-        const googleInstance2 = createGoogleGenerativeAI({
-            apiKey: process.env.GOOGLE_AI_API_KEY_WEBAGENT,
-        });
-
         const batchSize = 10;
         const results = [];
 
         for (let i = 0; i < docs.length; i += batchSize) {
-            const batchNumber = i / batchSize;
-            const currentGoogle = batchNumber % 2 === 0 ? googleInstance1 : googleInstance2;
-
             const batch = docs.slice(i, i + batchSize);
             const batchResults = await Promise.all(
                 batch.map(async (doc) => {
                     const contextualizedContent = await contextualizeChunk({
-                        google: currentGoogle,
                         text,
                         chunk: doc.content,
                     });
@@ -82,7 +72,7 @@ const contextualizeChunks = async ({ docs, text }) => {
 
         return results;
     } catch (error) {
-        console.error("Error in contextualizeChunks:", error);
+        logError({ error, message: "Error in contextualizeChunks:" });
         return docs;
     }
 };

@@ -3,6 +3,7 @@ const { Document } = require("langchain/document");
 const { embedTextsWithGoogle } = require("./embeddings");
 const { contextualizeChunks } = require("./contextualizeChunks");
 const { summarizeWebPage } = require("./summarizeWebPage");
+const logError = require("./observability");
 const {
     CHUNK_SIZE_TOKENS,
     SEPARATORS,
@@ -134,6 +135,7 @@ const processDocuments = async ({ supabase, pages }) => {
 
             return { page, records };
         } catch (error) {
+            logError({ error, message: `Error processing page: ${page.url}`, extra: { url: page.url } });
             return { page, error };
         }
     });
@@ -186,7 +188,7 @@ const processDocuments = async ({ supabase, pages }) => {
             );
             totalUpserted += upserted;
         } catch (error) {
-            console.error("Error upserting or updating source:", page.url, error);
+            logError({ error, message: `Error upserting or updating source: ${page.url}`, extra: { url: page.url } });
             try {
                 await withRetries(
                     () =>

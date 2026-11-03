@@ -2,7 +2,7 @@ const Sentry = require("@sentry/google-cloud-serverless");
 
 const logError = ({ error, message = "", extra = {} }) => {
     // Structured logging to console
-    console.error(message);
+    console.error(message, error);
 
     // Capture exception in Sentry with extra context
     // Sentry.captureException(error);
